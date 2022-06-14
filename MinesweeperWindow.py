@@ -1,4 +1,5 @@
 from tkinter import *
+from minesweeper import MineSweeper
 
 
 class MinesweeperWindow:
@@ -37,28 +38,12 @@ class MinesweeperWindow:
         return f
 
     def create1pgame(self):
+        board = MineSweeper(10, 10, 20)
 
+        self.createboard(board)
 
-        h = Scrollbar(self.root, orient='horizontal')
-        h.pack(side=BOTTOM, fill=X)
-        v = Scrollbar(self.root, orient='vertical')
-        v.pack(side=RIGHT, fill=Y)
-
-        c = Canvas(self.root, width=500, height=700, xscrollcommand=h.set, yscrollcommand=v.set)
-        c.place(x=0, y=0)
-        f = Frame(c, width=500, height=1400, bg="gray")
-        f.place(x=0, y=0)
-
-
-        h.config(command=c.xview)
-        v.config(command=c.yview)
-
-
-
-        return f
-
-    def createboard(self):
-        pass
+    def createboard(self, board):
+        print(board.board)
 
     def create2pgame(self):
         pass

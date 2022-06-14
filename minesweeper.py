@@ -13,16 +13,11 @@ class MineSweeper:
 
         self.placebombs()
         self.placenumbers()
-        self.input()
 
-    def input(self):
-        if self.method == "human":
-            x = int(input("x coordinate?"))
-            y = int(input("y coordinate?"))
-
+    def input(self, x, y, bomb=False):
         if x >= self.x or y >= self.y:
             print("guess is not valid")
-            self.input()
+            self.input(x, y, bomb)
 
         if self.board[y][x].reveal() == -1:
             self.gamestate = False
@@ -31,7 +26,6 @@ class MineSweeper:
             print("Game over")
         else:
             self.printuserboard()
-            self.input()
 
     def generateboard(self):
         eboard = [[Cell(i, j, 0) for i in range(0, self.x)]for j in range(0, self.y)]
