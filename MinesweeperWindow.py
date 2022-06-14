@@ -43,7 +43,10 @@ class MinesweeperWindow:
         self.createboard(board)
 
     def createboard(self, board):
-        print(board.board)
+        userboard = board.getuserboard()
+        for row in board:
+            for value in row:
+
 
     def create2pgame(self):
         pass
