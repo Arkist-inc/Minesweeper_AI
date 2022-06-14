@@ -1,15 +1,37 @@
 from random import randint
 from cell import Cell
 
+
 class MineSweeper:
-    def __init__(self, x, y, bombs):
+    def __init__(self, x, y, bombs, method="human"):
         self.x = x
         self.y = y
         self.bombcount = bombs
-
+        self.method = method
+        self.gamestate = True
         self.board = self.generateboard()
+
         self.placebombs()
         self.placenumbers()
+        self.input()
+
+    def input(self):
+        if self.method == "human":
+            x = int(input("x coordinate?"))
+            y = int(input("y coordinate?"))
+
+        if x >= self.x or y >= self.y:
+            print("guess is not valid")
+            self.input()
+
+        if self.board[y][x].reveal() == -1:
+            self.gamestate = False
+
+        if not self.gamestate:
+            print("Game over")
+        else:
+            self.printuserboard()
+            self.input()
 
     def generateboard(self):
         eboard = [[Cell(i, j, 0) for i in range(0, self.x)]for j in range(0, self.y)]
@@ -61,6 +83,19 @@ class MineSweeper:
 
         return surroundings
 
+    def getuserboard(self):
+        userboard = []
+        for row in self.board:
+            userrow = []
+            for cell in row:
+                if cell.revealed:
+                    userrow.append(cell.value)
+                else:
+                    userrow.append("x")
+            userboard.append(userrow)
+
+        return userboard
+
     def countbombs(self, lst):
         bombcount = 0
         for cell in lst:
@@ -74,3 +109,7 @@ class MineSweeper:
             for cell in row:
                 print(cell.value, end='')
             print('\n')
+
+    def printuserboard(self):
+        for row in self.getuserboard():
+            print(row)
