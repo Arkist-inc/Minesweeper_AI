@@ -13,29 +13,27 @@ class MineSweeper:
 
         self.placebombs()
         self.placenumbers()
+        self.setneighbours()
 
-    def input(self, x, y, bomb=False):
-        if x >= self.x or y >= self.y:
-            print("guess is not valid")
-            self.input(x, y, bomb)
+    def input(self, x, y, flag):
+        print(x, y)
 
         if self.board[y][x].reveal() == -1:
-            self.gamestate = False
+            return 0
 
-        if not self.gamestate:
-            print("Game over")
-        else:
-            self.printuserboard()
+        return 1
 
     def generateboard(self):
-        eboard = [[Cell(i, j, 0) for i in range(0, self.x)]for j in range(0, self.y)]
+        eboard = [[Cell(i, j, value=0) for i in range(0, self.x)]for j in range(0, self.y)]
 
         return eboard
 
     def placebombs(self):
         bombpositions = [[i, j] for j in range(0, self.y) for i in range(0, self.x)]
         for i in range(0, self.bombcount):
-            pos = bombpositions[randint(0, len(bombpositions))]
+            r = randint(0, len(bombpositions))
+            # print(r, len(bombpositions))
+            pos = bombpositions[r - 1]
             # print("Placing a bomb at: ", pos)
             self.placebomb(pos[0], pos[1])
 
@@ -51,6 +49,11 @@ class MineSweeper:
 
                 surroundings = self.surroundingcells(cell=cell)
                 cell.setvalue(self.countbombs(surroundings))
+
+    def setneighbours(self):
+        for row in self.board:
+            for cell in row:
+                cell.setneighbours(self.surroundingcells(cell=cell))
 
     def surroundingcells(self, pos=None, cell=None):
         if cell:
@@ -89,6 +92,12 @@ class MineSweeper:
             userboard.append(userrow)
 
         return userboard
+
+    def calculatestartingpoint(self):
+        for row in self.board:
+            for cell in row:
+                if cell.value == 0:
+                    return cell.x, cell.y
 
     def countbombs(self, lst):
         bombcount = 0
