@@ -18,10 +18,20 @@ class MineSweeper:
     def input(self, x, y, flag):
         print(x, y)
 
+        if flag:
+            self.board[y][x].flag()
+            return 1
+
         if self.board[y][x].reveal() == -1:
             return 0
 
         return 1
+
+    def gameover(self):
+        for row in self.board:
+            for cell in row:
+                cell.reveal()
+        return
 
     def generateboard(self):
         eboard = [[Cell(i, j, value=0) for i in range(0, self.x)]for j in range(0, self.y)]
@@ -85,19 +95,32 @@ class MineSweeper:
         for row in self.board:
             userrow = []
             for cell in row:
-                if cell.revealed:
-                    userrow.append(cell.value)
-                else:
-                    userrow.append("x")
+                userrow.append(cell)
             userboard.append(userrow)
 
         return userboard
 
     def calculatestartingpoint(self):
+        sgfgtdfs = []
+
         for row in self.board:
             for cell in row:
-                if cell.value == 0:
-                    return cell.x, cell.y
+                if cell in [y for x in sgfgtdfs for y in x]:
+                    continue
+                if cell.value != 0:
+                    continue
+                sgfgtdfs.append(cell.zeroarea())
+
+        big = [None, 0]
+        for x in sgfgtdfs:
+            if len(x) > big[1]:
+                big[1] = len(x)
+                big[0] = x
+
+        choice = big[0][randint(0, len(big))]
+        return choice.x, choice.y
+
+
 
     def countbombs(self, lst):
         bombcount = 0

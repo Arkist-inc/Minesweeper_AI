@@ -27,7 +27,8 @@ class MenuWindow:
                        "-1": PhotoImage(file="sprites/-1.png").zoom(self.zoom, self.zoom),
                        "flag": PhotoImage(file="sprites/flag.png").zoom(self.zoom, self.zoom),
                        "explosion": PhotoImage(file="sprites/explosion.png").zoom(self.zoom, self.zoom),
-                       "closed": PhotoImage(file="sprites/closed.png").zoom(self.zoom, self.zoom)}
+                       "closed": PhotoImage(file="sprites/closed.png").zoom(self.zoom, self.zoom),
+                       "cross": PhotoImage(file="sprites/cross.png").zoom(self.zoom, self.zoom)}
 
         self.root.geometry("500x700")
         self.window = self.createmainmenu()
@@ -60,23 +61,24 @@ class MenuWindow:
         b.bind("<Button-1>", lambda event, f=f: (self.switchwindow("mainmenu"), f.destroy()))
         b.place(relx=.5, rely=.9, anchor='center')
 
+        self.ms.gameover()
+        self.updateboard()
+
         return f
 
     def create1pgame(self):
         self.ms = MineSweeper(10, 10, 20)
 
 
-        return self.createboard(self.ms)
+        return self.createboard()
 
-    def createboard(self, board):
-        f = Frame(self.root, width=board.x * 8 * self.zoom, height=board.y * 8 * self.zoom)
+    def createboard(self):
+        f = Frame(self.root, width=self.ms.x * 8 * self.zoom, height=self.ms.y * 8 * self.zoom)
         f.place(relx=.5, rely=.6, anchor='center')
-
-        start = board.calculatestartingpoint()
 
         yaxis = -1
         self.butboard = []
-        for row in board.board:
+        for row in self.ms.board:
             butrow = []
             yaxis += 1
             xaxis = -1
@@ -94,17 +96,19 @@ class MenuWindow:
                     butrow.append(but)
 
             self.butboard.append(butrow)
+
+        start = self.ms.calculatestartingpoint()
+        l = Label(f, image=self.images["cross"], borderwidth=0)
+        l.place(x=start[0] * 8 * self.zoom, y=start[1] * 8 * self.zoom)
+        l.bind("<Button-1>", lambda event, x=start[0], y=start[1]: (self.play(x, y, False), l.destroy()))
+
         return f
 
     def play(self, x, y, flag):
-        self.drawnboard = self.ms.getuserboard()
-        if flag:
-            l = Label(self.window, image=self.images["flag"], borderwidth=0)
-            l.bind("<Button-3>", lambda event, l=l: l.destroy())
-            l.place(x=x * 8 * self.zoom, y=y * 8 * self.zoom)
-
-        elif self.ms.input(x, y, flag):
+        self.drawnboard = [[(y.revealed, y.flagged) for y in x] for x in self.ms.getuserboard()]
+        if self.ms.input(x, y, flag):
             self.updateboard()
+
         else:
             self.disablebuttons()
             self.creategameover().place(relx=.5, rely=.5, anchor='center')
@@ -161,8 +165,15 @@ class MenuWindow:
         board = self.ms.getuserboard()
         for y in range(self.ms.y):
             for x in range(self.ms.x):
-                if self.drawnboard[y][x] != board[y][x]:
-                    self.butboard[y][x].configure(image=self.images[str(board[y][x])])
+                if self.drawnboard[y][x][0] != board[y][x].revealed:
+                    self.butboard[y][x].configure(image=self.images[str(board[y][x].value)])
+                    continue
+
+                if self.drawnboard[y][x][1] != board[y][x].flagged:
+                    if board[y][x].flagged:
+                        self.butboard[y][x].configure(image=self.images["flag"])
+                    else:
+                        self.butboard[y][x].configure(image=self.images["closed"])
 
     def disablebuttons(self):
         for row in self.butboard:

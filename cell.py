@@ -24,4 +24,21 @@ class Cell:
         self.neighbours = neighbours
 
     def flag(self):
-        self.flagged = True
+        if self.revealed:
+            return
+
+        if self.flagged:
+            self.flagged = False
+        else:
+            self.flagged = True
+
+    def zeroarea(self, zeroes=[]):
+        if self in zeroes:
+            return
+        if self.value == 0:
+            zeroes.append(self)
+            for x in self.neighbours:
+                x.zeroarea(zeroes)
+
+            print(zeroes)
+            return zeroes
