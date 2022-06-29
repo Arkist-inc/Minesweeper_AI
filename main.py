@@ -1,10 +1,8 @@
-from minesweeper import MineSweeper
-from cell import *
-import pprint
+from menuwindow import MenuWindow
+
 
 def main():
-    m = MineSweeper(10, 10, 10)
-    m.printboard()
+    MenuWindow()
 
 
 if __name__ == '__main__':

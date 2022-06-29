@@ -1,7 +1,6 @@
 from random import randint
 from cell import Cell
 from threading import Thread
-import threading
 import time
 from tkinter import StringVar
 
@@ -67,9 +66,8 @@ class MineSweeper:
         :return: int
             returnt of je hebt verloren, gewonnen of dat het spel nog gaande is
         """
-        # if self.method == 'Simple':
-        #     revealzero = False
-        #     flag, x, y = self.simpleguess()
+        if self.method == 'Simple':
+            return self.simpleguess()
 
         # print(x, y, flag)
 

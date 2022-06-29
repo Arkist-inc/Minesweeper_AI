@@ -1,6 +1,5 @@
 from tkinter import *
 from minesweeper import MineSweeper
-import time
 
 
 class MenuWindow:
@@ -9,9 +8,7 @@ class MenuWindow:
     """
     def __init__(self):
         self.frames = {"1psettings": self.create1psettings,
-                       "2psettings": self.create2psettings,
                        "1pgame": self.create1pgame,
-                       "2pgame": self.create2pgame,
                        "mainmenu": self.createmainmenu,
                        "controls": self.createcontrols}
 
@@ -69,8 +66,9 @@ class MenuWindow:
                command=lambda: self.switchwindow("controls")).place(relx=.5, rely=.6, anchor='center')
         Button(f, text="Play on your own", bg="darkgray", font=("Times", 20),
                command=lambda: self.switchwindow("1psettings")).place(relx=.5, rely=.7, anchor='center')
-        Button(f, text="play versus AI", bg="darkgray", font=("Times", 20),
-               command=lambda: self.switchwindow("2psettings")).place(relx=.5, rely=.8, anchor='center')
+        # oud idee
+        # Button(f, text="play versus AI", bg="darkgray", font=("Times", 20),
+        #        command=lambda: self.switchwindow("2psettings")).place(relx=.5, rely=.8, anchor='center')
         Button(f, text="quit", bg="darkgray", font=("Times", 10), command=self.root.destroy).place(relx=.05, rely=.97,
                                                                                                    anchor='center')
 
@@ -203,17 +201,16 @@ class MenuWindow:
         :param flag: bool
             of het cell een vlag is of niet
         """
-        input = self.ms.input(x, y, flag)
-        if input == 1:
+        guess = self.ms.input(x, y, flag)
+        if guess == 1:
             self.updateboard()
 
-        elif input == 0:
+        elif guess == 0:
             self.disablebuttons()
             self.creategameover()
             return
 
-        elif input == 2:
-            print("you win")
+        elif guess == 2:
             self.disablebuttons()
             self.createwin()
 
@@ -320,13 +317,12 @@ class MenuWindow:
         zorgt ervoor dat het bord heel de teid wordt geupdate
         """
         self.updateboard()
-        simple = self.ms.simpleguess()
-        if simple == 0:
+        guess = self.ms.input()
+        if guess == 0:
             self.createwin()
             return
-        elif simple == 2:
+        elif guess == 2:
             self.creategameover()
             return
         self.root.after(100, self.continueslyupdateboard)
 
-m = MenuWindow()
