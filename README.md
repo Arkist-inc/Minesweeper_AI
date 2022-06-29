@@ -36,6 +36,7 @@ S ← {}
     end if
   end for
 end while
+![image](https://user-images.githubusercontent.com/90763686/176478986-4feb75e2-36d0-4040-a959-f453d8607dd2.png)
 
 ## AFN
 
