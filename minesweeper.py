@@ -65,17 +65,16 @@ class MineSweeper:
             of de cel die aangeklikt wordt als hij een waarde heeft van 0 (er zitten geen bommen omheen) de cellen
             eromheen moet weergeven
         :return: int
-            returnt of je hebt verloren gewonnen of dat het spel nog gaande is
+            returnt of je hebt verloren, gewonnen of dat het spel nog gaande is
         """
         # if self.method == 'Simple':
         #     revealzero = False
         #     flag, x, y = self.simpleguess()
 
-        print(x, y, flag)
+        # print(x, y, flag)
 
         if flag:
             self.board[y][x].flag()
-            print(self.board[y][x].flagged)
             return 1
 
         if self.board[y][x].reveal(revealzero) == -1:
@@ -107,6 +106,7 @@ class MineSweeper:
                 if not cell.revealed and not cell.value == -1:
                     return 0
         self.gamestate = False
+        return 1
 
     def generateboard(self):
         """
@@ -276,6 +276,9 @@ class MineSweeper:
             print(row)
 
     def incrementcounter(self):
+        """
+        Increments de timer van de minesweeper game
+        """
         if self.gamestate:
             self.timer.set(f"{round(float(self.timer.get()) + 0.1, 1)}")
             time.sleep(0.1)
@@ -284,6 +287,12 @@ class MineSweeper:
             return
 
     def countflag(self):
+        """
+        telt alle vlaggen op
+
+        :return: int
+            amount of flags
+        """
         i = 0
         for row in self.board:
             for cell in row:
@@ -293,10 +302,20 @@ class MineSweeper:
         return i
 
     def updatebombcounter(self):
-        print(self.countflag())
+        """
+        Updates de bomb counter van de minesweeper game
+        """
         self.bombcountervar.set(str(self.bombcount - self.countflag()))
 
     def simpleguess(self):
+        """
+        Minesweeper Algorithm gebasseerd op het algoritme beschreven in pagina 20 van
+        https://dash.harvard.edu/bitstream/handle/1/14398552/BECERRA-SENIORTHESIS-2015.pdf
+
+
+        :return: int
+            gebasseerd op een winst of een verlies
+        """
         self.updatebombcounter()
         # if self.bomblist:
         #     bomb = self.bomblist.pop()
@@ -314,7 +333,7 @@ class MineSweeper:
 
             if self.cells == self.lastcells:
                 rand = self.randomguess()
-                print("adding", rand.x, rand.y)
+                # print("adding", rand.x, rand.y)
                 self.cells.add(rand)
 
             self.lastcells = self.cells.copy()
@@ -328,11 +347,12 @@ class MineSweeper:
                     return
 
                 if not self.gamestate:
-                    print("game over!")
-                    return
+                    if self.checkwin():
+                        return 2
+                    return 0
 
                 if self.isAFN(c):
-                    print("AFN on", c.x, c.y)
+                    # print("AFN on", c.x, c.y)
                     for x in c.neighbours:
                         if not x.revealed:
                             self.cells.add(x)
@@ -340,7 +360,7 @@ class MineSweeper:
                     break
 
                 elif self.isAMN(c):
-                    print("AMN")
+                    # print("AMN")
                     for x in c.neighbours:
                         if not x.revealed:
                             self.bomblist.add(x)
@@ -361,16 +381,31 @@ class MineSweeper:
             # self.cells.append(randomguess)
 
     def randomguess(self):
+        """
+        kiest een willekeurige cell op het bord
+
+        :return: Cell
+            willekeurige cel op het bord
+        """
         guesses = []
         for row in self.board:
             for cell in row:
                 if not cell.revealed:
                     guesses.append(cell)
 
-        print([[x.x, x.y] for x in guesses])
+        # print([[x.x, x.y] for x in guesses])
         return guesses[randint(0, len(guesses) - 1)]
 
     def isAFN(self, cell):
+        """
+        All Free Neighbours kijkt of het aantal bommen voldaan is, dus als een cel de value heeft van 1 en er ligt 1 bom
+        omheen dan is deze conditie voldaan
+
+        :param cell: Cell
+            Welke cell er naar gekeken moet worden
+        :return:
+            of de conditie is voldaan
+        """
         # all free neighbours
         bombs = 0
         for x in cell.neighbours:
@@ -380,6 +415,13 @@ class MineSweeper:
         return True if bombs == cell.value else False
 
     def isAMN(self, cell):
+        """All Marked Neighbours kijkt of het aantal dichte cellen + aantal vlaggen gelijk is aan de waarde van de cel
+
+        :param cell: Cell
+            welke cell er naar gekeken moet worden
+        :return:
+            of de conditie is voldaan
+        """
         # all marked neighbours
         cells = 0
         for x in cell.neighbours:

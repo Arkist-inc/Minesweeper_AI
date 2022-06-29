@@ -4,7 +4,9 @@ import time
 
 
 class MenuWindow:
-
+    """"
+    Het MenuWindow is het hart van de operatie, het stuurt de tkinter window aan en geeft alles weer
+    """
     def __init__(self):
         self.frames = {"1psettings": self.create1psettings,
                        "2psettings": self.create2psettings,
@@ -37,6 +39,14 @@ class MenuWindow:
         self.root.mainloop()
 
     def switchwindow(self, window, *args):
+        """
+        switched van 1 window naar een andere
+
+        :param window: Frame
+            window waar naar geswitched moet worden
+        :param args:
+            overige argumenten
+        """
         self.window.destroy()
 
         if window == "1pgame":
@@ -45,6 +55,12 @@ class MenuWindow:
         self.window = self.frames[window]()
 
     def createmainmenu(self):
+        """
+        creërt het main menu
+
+        :return: Frame
+            de frame van de main menu
+        """
         f = Frame(self.root, width=500, height=700, bg="gray")
         f.place(x=0, y=0)
         Label(f, text="Welcome to MineSweeper", bg="darkgray", font=("Times", 30)).place(relx=.5, rely=.1,
@@ -61,29 +77,56 @@ class MenuWindow:
         return f
 
     def creategameover(self):
+        """
+        creeërt het het game over scherm
+
+        :return: Frame
+            de frame van het game over scherm
+        """
+
         f = Frame(self.window, width=250, height=350, bg="gray", borderwidth=3, relief="groove")
         Label(f, text="GAME OVER", bg="darkgray", font=("Times", 25)).place(relx=.5, rely=.15, anchor='center')
-        b = Label(self.window, text="go back to main menu", bg="darkgray", font=("Times", 13))
+        b = Label(f, text="go back to main menu", bg="darkgray", font=("Times", 13))
         b.bind("<Button-1>", lambda event, f=f: (self.switchwindow("mainmenu"), f.destroy()))
         b.place(relx=.5, rely=.9, anchor='center')
 
+        Label(f, text=f"Time: {self.ms.timer.get()}s", font=("Times", 25), bg="darkgray").place(relx=.5, rely=.3, anchor='center')
+        Label(f, text=f"bombs left: {self.ms.bombcountervar.get()}", font=("Times", 25), bg="darkgray").place(relx=.5, rely=.42, anchor='center')
+
         self.updateboard()
 
-        return f
+        f.place(relx=.5, rely=.5, anchor='center')
 
     def createwin(self):
-        print("win!!")
+        """
+        creërt het het winst scherm
+
+        :return: Frame
+            de frame van het winst scherm
+        """
         f = Frame(self.window, width=250, height=350, bg="gray", borderwidth=3, relief="groove")
         Label(f, text="YOU WIN!!!", bg="darkgray", font=("Times", 25)).place(relx=.5, rely=.15, anchor='center')
-        b = Label(self.window, text="go back to main menu", bg="darkgray", font=("Times", 13))
+        b = Label(f, text="go back to main menu", bg="darkgray", font=("Times", 13))
         b.bind("<Button-1>", lambda event, f=f: (self.switchwindow("mainmenu"), f.destroy()))
         b.place(relx=.5, rely=.9, anchor='center')
 
+        Label(f, text=f"Time: {self.ms.timer.get()}s", font=("Times", 25), bg="darkgray").place(relx=.5, rely=.3, anchor='center')
+
         self.updateboard()
 
-        return f
+        f.place(relx=.5, rely=.5, anchor='center')
 
     def create1pgame(self, difficulty, algorithm):
+        """
+        creërt een single player game met een bepaald algoritme, keuze uit [Human, Simple]
+
+        :param difficulty: str
+            de moeilijkheidsgraad van de minesweeper game
+        :param algorithm: str
+            naam van het algoritme dat gebruikt moet worden
+        :return: Frame
+            van het bord met de juist instellingen
+        """
         difficulties = {"Easy": (10, 10, 10),
                         "Medium": (10, 10, 20),
                         "Hard": (20, 20, 50),
@@ -95,6 +138,12 @@ class MenuWindow:
         return self.createboard()
 
     def createboard(self):
+        """
+        Creërt een minesweeper bord
+
+        :return: Frame
+            frame van een minesweeper bord
+        """
         f = Frame(self.root, width=self.ms.x * 8 * self.zoom, height=self.ms.y * 8 * self.zoom + 100, bg="gray")
         f.place(relx=.5, rely=0, anchor='n')
 
@@ -143,24 +192,37 @@ class MenuWindow:
         return f
 
     def play(self, x=0, y=0, flag=False):
+        """
+        de buttons komen bij deze functie uit om input te geven aan het minesweeper object en om game eindes
+        te regelen
+
+        :param x: int
+            x coordinaat van de cell
+        :param y: int
+            y coordinaat van de cell
+        :param flag: bool
+            of het cell een vlag is of niet
+        """
         input = self.ms.input(x, y, flag)
         if input == 1:
             self.updateboard()
 
         elif input == 0:
             self.disablebuttons()
-            self.creategameover().place(relx=.5, rely=.5, anchor='center')
+            self.creategameover()
             return
 
         elif input == 2:
+            print("you win")
             self.disablebuttons()
             self.createwin()
 
         if flag:
             self.ms.updatebombcounter()
 
-    def create2pgame(self):
-        pass
+    # oud idee
+    # def create2pgame(self):
+    #     pass
 
     def create1psettings(self):
         f = Frame(self.root, width=500, height=700, bg="gray")
@@ -186,27 +248,32 @@ class MenuWindow:
         option.place(relx=.05, rely=.46, anchor='w')
 
 
-
         Button(f, text="Start the game!", bg="darkgray", font=("Times", 30), command=lambda: self.switchwindow("1pgame", s.get(), algorithm.get())).place(relx=.5, rely=.9, anchor='center')
         Button(f, text="Back", bg="darkgray", font=("Times", 10), command=lambda: self.switchwindow("mainmenu")).place(
             relx=.05, rely=.97, anchor='center')
 
         return f
 
-    def create2psettings(self):
-        f = self.create1psettings()
-
-        Label(f, text="Algorithm:", bg="darkgray", font=("Times", 20)).place(relx=.05, rely=.35, anchor='w')
-        options = ["simple algorithm"]
-        s = StringVar()
-        s.set(options[0])
-        o2 = OptionMenu(f, s, *options)
-        o2.config(bg="darkgray", fg="black", font=("Times", 15), highlightthickness=0)
-        o2.place(relx=.05, rely=.41, anchor='w')
-
-        return f
+    # oud idee
+    # def create2psettings(self):
+    #     f = self.create1psettings()
+    #
+    #     Label(f, text="Algorithm:", bg="darkgray", font=("Times", 20)).place(relx=.05, rely=.35, anchor='w')
+    #     options = ["simple algorithm"]
+    #     s = StringVar()
+    #     s.set(options[0])
+    #     o2 = OptionMenu(f, s, *options)
+    #     o2.config(bg="darkgray", fg="black", font=("Times", 15), highlightthickness=0)
+    #     o2.place(relx=.05, rely=.41, anchor='w')
+    #
+    #     return f
 
     def createcontrols(self):
+        """
+        creërt de controls tab voor de applicatie
+        :return: Frame
+            frame van de control pagina
+        """
         f = Frame(self.root, width=500, height=700, bg="gray")
         f.place(x=0, y=0)
 
@@ -218,6 +285,12 @@ class MenuWindow:
         return f
 
     def updateboard(self):
+        """
+        update het minesweeper bord op basis van welke vlakken er zijn veranderd
+        """
+        if not self.ms.gamestate:
+            return
+
         board = self.ms.getuserboard()
         for y in range(self.ms.y):
             for x in range(self.ms.x):
@@ -233,16 +306,27 @@ class MenuWindow:
                     self.butboard[y][x].configure(image=self.images["closed"])
 
     def disablebuttons(self):
+        """
+        disabled alle buttons van minesweeper zodat je niet meer kan spelen als de game over is
+        """
         for row in self.butboard:
             for but in row:
                 but.unbind('<Button 1>')
                 but.unbind('<Button 2>')
                 but.unbind('<Button 3>')
 
-
     def continueslyupdateboard(self):
+        """
+        zorgt ervoor dat het bord heel de teid wordt geupdate
+        """
         self.updateboard()
-        self.ms.simpleguess()
+        simple = self.ms.simpleguess()
+        if simple == 0:
+            self.createwin()
+            return
+        elif simple == 2:
+            self.creategameover()
+            return
         self.root.after(100, self.continueslyupdateboard)
 
 m = MenuWindow()
