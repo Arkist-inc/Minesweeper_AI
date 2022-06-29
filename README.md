@@ -18,11 +18,13 @@ algoritme in logica uit pagina 20 van https://dash.harvard.edu/bitstream/handle/
 Op het plaatje valt te zien dat er eigenlijk elke keer over een lijst van cellen wordt gelooped en wordt gekeken of het voldoet aan 1 van 2 eisen, AFN of AMN, maar wat houden deze 2 eisen in, zie hieronder
 
 ## AFN
-AFN ook wel "All Free Neighbours" betekent dat het aantal gemarkeerde bommen om de cel heen evenveel is als de waarde van de cel (hoeveel bommen er echt om de cel liggen) daardoor weet je dus dat je alle cellen om de cel heen die niet gemarkeerd zijn kan aanklikken. zie ook het plaatje hieronder 
+AFN ook wel "All Free Neighbours" betekent dat het aantal gemarkeerde bommen om de cel heen evenveel is als de waarde van de cel (hoeveel bommen er echt om de cel liggen) daardoor weet je dus dat je alle cellen om de cel heen die niet gemarkeerd zijn kan aanklikken.
+zie ook het plaatje hieronder 
 ![image](https://user-images.githubusercontent.com/90763686/176496589-047c8d43-8700-4919-b7bc-33d780939e7a.png)
 
 ## AMN
-AMN ook wel "All Marked Neighbours" betekend dat het aantal gemarkeerde bommen om een cel + het aantal dichte cellen om een cel heen evenveel is als de waarde van een cel, waardoor je alle cellen om de cel kan markeren als bommen. zie ook het plaatje hieronder
+AMN ook wel "All Marked Neighbours" betekend dat het aantal gemarkeerde bommen om een cel + het aantal dichte cellen om een cel heen evenveel is als de waarde van een cel, waardoor je alle cellen om de cel kan markeren als bommen.
+zie ook het plaatje hieronder
 ![image](https://user-images.githubusercontent.com/90763686/176498713-9467036b-a882-4b86-8da0-a5399729efdc.png)
  
 ## keuze algoritme
