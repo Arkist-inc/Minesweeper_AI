@@ -156,7 +156,6 @@ class MenuWindow:
             self.disablebuttons()
             self.createwin()
 
-
         if flag:
             self.ms.updatebombcounter()
 
@@ -226,13 +225,12 @@ class MenuWindow:
                     self.butboard[y][x].configure(image=self.images[str(board[y][x].value)])
                     continue
 
-                if self.drawnboard[y][x][1] != board[y][x].flagged:
-                    if board[y][x].flagged:
-                        temp = self.butboard[y][x]
-                        temp.configure(image=self.images["flag"])
-                        temp.bind("<Button-3>", lambda event, x=x, y=y : self.play(x, y, True))
-                    else:
-                        self.butboard[y][x].configure(image=self.images["closed"])
+                if board[y][x].flagged:
+                    temp = self.butboard[y][x]
+                    temp.configure(image=self.images["flag"])
+                    temp.bind("<Button-3>", lambda event, x=x, y=y : self.play(x, y, True))
+                else:
+                    self.butboard[y][x].configure(image=self.images["closed"])
 
     def disablebuttons(self):
         for row in self.butboard:
