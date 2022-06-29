@@ -2,12 +2,18 @@
 AI voor minesweeper
 
 # Getting started
-## vereisten
-Om dit programma te gebruiken moet je de volgende programma's geïnstalleerd hebben
+
+## requirements
+Om dit programma te gebruiken heb je een aantal dingen nodig
+
   - Python
-  - Threading (library voor python)
-  - Tkinter (library voor python)
-  - Time (library voor python)
+  - Tkinter (Standaard library van python)
+  - Threading (Standaard library van python)
+  - Time (Standaard library van python)
+
+## gebruik
+Om dit programma te gebruiken hoef je alleen maar het main.py script te runnen.
+
 
 # Algorithm
 ## logica
@@ -34,8 +40,4 @@ Ik heb dit algoritme gekozen omdat het een heel erg duidelijk algoritme is maar 
 
 Dit algoritme zal een goede ervaren speler niet helpen, maar mijn opdrachtgever (mijn moeder) is dat niet, dus dit algoritme kan haar helpen met het sneller/beter oplossen van minesweeper bord.
 
-# requirements
-  - Python
-  - Tkinter (Standaard library van python)
-  - Threading (Standaard library van python)
-  - Time (Standaard library van python)
+
