@@ -10,14 +10,15 @@ class Cell:
     def setvalue(self, value):
         self.value = value
 
-    def reveal(self):
+    def reveal(self, revealzero=True):
         if self.revealed:
             return
 
         self.revealed = True
-        if self.value == 0:
-            for cell in self.neighbours:
-                cell.reveal()
+        if revealzero:
+            if self.value == 0:
+                for cell in self.neighbours:
+                    cell.reveal()
         return self.value
 
     def setneighbours(self, neighbours):
@@ -40,5 +41,4 @@ class Cell:
             for x in self.neighbours:
                 x.zeroarea(zeroes)
 
-            print(zeroes)
             return zeroes
