@@ -27,7 +27,6 @@ class MineSweeper:
         :param delay:
             Hoelange pauze het algoritme neemt voor elke zet
         """
-
         self.x = x
         self.y = y
         self.bombcount = bombs

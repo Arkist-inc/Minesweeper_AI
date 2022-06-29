@@ -1,12 +1,16 @@
 from tkinter import *
 from MineSweeper import MineSweeper
 
-
 class MenuWindow:
     """"
     Het MenuWindow is het hart van de operatie, het stuurt de tkinter window aan en geeft alles weer
     """
+
     def __init__(self):
+        """
+        Cell
+        """
+
         self.frames = {"1psettings": self.create1psettings,
                        "1pgame": self.create1pgame,
                        "mainmenu": self.createmainmenu,
