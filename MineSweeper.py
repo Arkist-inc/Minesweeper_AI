@@ -1,5 +1,5 @@
 from random import randint
-from cell import Cell
+from Cell import Cell
 from threading import Thread
 import time
 from tkinter import StringVar
@@ -50,7 +50,7 @@ class MineSweeper:
 
         Thread(target=self.incrementcounter).start()
 
-    def input(self, x=0, y=0, flag=False, revealzero=True):
+    def input(self, x=0, y=0, flag=False, revealzero=True, algorithguess=False):
         """
         :param x: int
             het x coördinaat van de cel die aangeklikt moet worden
@@ -66,7 +66,7 @@ class MineSweeper:
         :return: int
             returnt of je hebt verloren, gewonnen of dat het spel nog gaande is
         """
-        if self.method == 'Simple':
+        if self.method == 'Simple' and not algorithguess:
             return self.simpleguess()
 
         # print(x, y, flag)
@@ -77,12 +77,10 @@ class MineSweeper:
 
         if self.board[y][x].reveal(revealzero) == -1:
             self.gameover()
-            print("You lost")
-            return 0
+            return 2
 
         if self.checkwin():
-            print("YOU WIN!!!")
-            return 2
+            return 3
 
         return 1
 
@@ -99,7 +97,7 @@ class MineSweeper:
         """
         Checkt of alle cellen die geen bommen zijn zijn gerevealed
         """
-        for row in self.board:
+        for row in self.board.copy():
             for cell in row:
                 if not cell.revealed and not cell.value == -1:
                     return 0
@@ -236,7 +234,7 @@ class MineSweeper:
                 big[1] = len(x)
                 big[0] = x
 
-        choice = big[0][randint(0, len(big))]
+        choice = big[0][randint(0, len(big) - 1)]
         return choice.x, choice.y
 
 
@@ -271,7 +269,9 @@ class MineSweeper:
         Print het bord dat de gebruiker ziet op een leesbare manier uit
         """
         for row in self.getuserboard():
-            print(row)
+            for cell in row:
+                print("printing:", cell.value, end="")
+            print("")
 
     def incrementcounter(self):
         """
@@ -341,13 +341,15 @@ class MineSweeper:
                     self.cells.remove(c)
                     continue
 
-                if self.input(c.x, c.y, False, False) == 0:
-                    return
+                if self.input(c.x, c.y, False, False, algorithguess=True) == 2:
+                    self.gameover()
+                    return 2
 
                 if not self.gamestate:
+                    self.gameover()
                     if self.checkwin():
-                        return 2
-                    return 0
+                        return 3
+                    return 2
 
                 if self.isAFN(c):
                     # print("AFN on", c.x, c.y)
@@ -362,7 +364,7 @@ class MineSweeper:
                     for x in c.neighbours:
                         if not x.revealed:
                             self.bomblist.add(x)
-                            self.input(x.x, x.y, True, False)
+                            self.input(x.x, x.y, True, False, algorithguess=True)
                     self.cells.remove(c)
 
                 # if self.clicklist:
@@ -377,6 +379,8 @@ class MineSweeper:
 
             # randomguess = self.randomguess()
             # self.cells.append(randomguess)
+        return 1
+
 
     def randomguess(self):
         """

@@ -1,5 +1,5 @@
 from tkinter import *
-from minesweeper import MineSweeper
+from MineSweeper import MineSweeper
 
 
 class MenuWindow:
@@ -29,7 +29,8 @@ class MenuWindow:
                        "flag": PhotoImage(file="sprites/flag.png").zoom(self.zoom, self.zoom),
                        "explosion": PhotoImage(file="sprites/explosion.png").zoom(self.zoom, self.zoom),
                        "closed": PhotoImage(file="sprites/closed.png").zoom(self.zoom, self.zoom),
-                       "cross": PhotoImage(file="sprites/cross.png").zoom(self.zoom, self.zoom)}
+                       "cross": PhotoImage(file="sprites/cross.png").zoom(self.zoom, self.zoom),
+                       "tutorial": PhotoImage(file="sprites/board.png")}
 
         self.root.geometry("500x700")
         self.window = self.createmainmenu()
@@ -45,9 +46,11 @@ class MenuWindow:
             overige argumenten
         """
         self.window.destroy()
+        self.root.geometry("500x700")
 
         if window == "1pgame":
             self.window = self.create1pgame(*args)
+            self.root.geometry(f"{self.zoom * 8 * self.ms.x + 100}x{self.zoom * 8 * self.ms.y + 150}")
             return
         self.window = self.frames[window]()
 
@@ -126,10 +129,10 @@ class MenuWindow:
             van het bord met de juist instellingen
         """
         difficulties = {"Easy": (10, 10, 10),
-                        "Medium": (10, 10, 20),
-                        "Hard": (20, 20, 50),
-                        "UltraHard": (20, 20, 60),
-                        "DEATH": (30, 30, 100)}
+                        "Medium": (10, 10, 30),
+                        "Hard": (20, 20, 100),
+                        "UltraHard": (20, 20, 150),
+                        "DEATH": (20, 20, 200)}
 
         self.ms = MineSweeper(*difficulties[difficulty], method=algorithm)
 
@@ -142,8 +145,13 @@ class MenuWindow:
         :return: Frame
             frame van een minesweeper bord
         """
-        f = Frame(self.root, width=self.ms.x * 8 * self.zoom, height=self.ms.y * 8 * self.zoom + 100, bg="gray")
+        f = Frame(self.root, width=self.ms.x * 8 * self.zoom, height=self.ms.y * 8 * self.zoom + 200, bg="gray")
         f.place(relx=.5, rely=0, anchor='n')
+        self.bombcounter = StringVar(value=f"{self.ms.bombcountervar}")
+        Label(f, textvariable=self.ms.bombcountervar, borderwidth=0, font=("times", 30), bg="gray").place(relx=.1, rely=.1, anchor='center')
+
+        # self.timer = StringVar(value=f"{self.ms.timer}")
+        Label(f, textvariable=self.ms.timer, borderwidth=0, font=("times", 30), bg="gray").place(relx=.9, rely=.1, anchor='center')
 
         yaxis = -1
         self.butboard = []
@@ -169,12 +177,6 @@ class MenuWindow:
             self.butboard.append(butrow)
 
         boardframe.place(relx=0.5, rely=.15, anchor='n')
-
-        self.bombcounter = StringVar(value=f"{self.ms.bombcountervar}")
-        Label(f, textvariable=self.ms.bombcountervar, borderwidth=0, font=("times", 30), bg="gray").place(relx=.1, rely=.1, anchor='center')
-
-        # self.timer = StringVar(value=f"{self.ms.timer}")
-        Label(f, textvariable=self.ms.timer, borderwidth=0, font=("times", 30), bg="gray").place(relx=.9, rely=.1, anchor='center')
 
         if self.ms.method == "Human":
             start = self.ms.calculatestartingpoint()
@@ -205,12 +207,12 @@ class MenuWindow:
         if guess == 1:
             self.updateboard()
 
-        elif guess == 0:
+        elif guess == 2:
             self.disablebuttons()
             self.creategameover()
             return
 
-        elif guess == 2:
+        elif guess == 3:
             self.disablebuttons()
             self.createwin()
 
@@ -273,11 +275,13 @@ class MenuWindow:
         """
         f = Frame(self.root, width=500, height=700, bg="gray")
         f.place(x=0, y=0)
+        Label(f, image=self.images['tutorial']).place(relx=.5, rely=.1, anchor='n')
 
         Label(f, text="Controls", bg="darkgray", font=("Times", 30)).place(relx=.5, rely=.05, anchor='center')
 
         Button(f, text="Back", bg="darkgray", font=("Times", 10), command=lambda: self.switchwindow("mainmenu")).place(
             relx=.05, rely=.97, anchor='center')
+
 
         return f
 
@@ -288,10 +292,11 @@ class MenuWindow:
         if not self.ms.gamestate:
             return
 
-        board = self.ms.getuserboard()
-        for y in range(self.ms.y):
-            for x in range(self.ms.x):
-                if self.drawnboard[y][x][0] != board[y][x].revealed:
+        board = self.ms.board
+        # print(self.ms.printuserboard())
+        for y in range(0, self.ms.y):
+            for x in range(0, self.ms.x):
+                if board[y][x].revealed:
                     self.butboard[y][x].configure(image=self.images[str(board[y][x].value)])
                     continue
 
@@ -314,15 +319,19 @@ class MenuWindow:
 
     def continueslyupdateboard(self):
         """
-        zorgt ervoor dat het bord heel de teid wordt geupdate
+        zorgt ervoor dat het bord heel de tijd wordt geupdate
         """
-        self.updateboard()
         guess = self.ms.input()
-        if guess == 0:
+        self.updateboard()
+        # self.ms.printuserboard()
+        # print(guess)
+        if guess == 3:
             self.createwin()
             return
         elif guess == 2:
             self.creategameover()
             return
-        self.root.after(100, self.continueslyupdateboard)
+        elif guess == 1:
+            self.root.after(100, self.continueslyupdateboard)
+
 

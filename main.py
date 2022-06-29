@@ -1,4 +1,4 @@
-from menuwindow import MenuWindow
+from MenuWindow import MenuWindow
 
 
 def main():
